@@ -21,3 +21,13 @@ The project can be deployed as is with docker compose. The default values should
    * Adjust ports and container names if necessary
    * Make further adjustments (e. g. add kafka brokers)
 1. Build and then deploy/start through "docker compose up"
+1. Once data is generated and processed, connect data sources in Druid (default access to gui: http://localhost:8888/unified-console.html)
+   * For raw data generated through the sensor data script (default values):
+     * Bootstrap servers: kafka0:29092
+     * Topic: sensor-data-raw
+   * For data aggregated with pyspark (default values):
+     * Bootstrap servers: kafka0:29092
+     * Topic: sensor-data-aggregated
+1. The data should be visible in Druid, the setup is complete.
+   
+     
