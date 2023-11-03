@@ -134,6 +134,20 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
+  supervisor-specs:
+    image: curlimages/curl:7.78.0
+    depends_on:
+      - middlemanager
+      - coordinator
+    command: >
+      sh -c "
+      sleep 30;
+      curl -X POST -H 'Content-Type: application/json' -d @/druid-ingestion/ingest-sensordata-raw.json http://coordinator:8081/druid/indexer/v1/supervisor;
+      curl -X POST -H 'Content-Type: application/json' -d @/druid-ingestion/ingest-sensordata-aggregated.json http://coordinator:8081/druid/indexer/v1/supervisor
+      "
+    volumes:
+      - ./druid-ingestion/:/druid-ingestion/
+
   sensorgenerator:
     container_name: sensors
     build:
@@ -150,4 +164,7 @@ services:
       - ./pyspark/pyspark.py:/app/spark-aggregation.py
     depends_on:
       - kafka0
+      - sensorgenerator
     command: python /app/spark-aggregation.py
+
+
